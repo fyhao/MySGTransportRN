@@ -1,5 +1,5 @@
 os: osx
-osx_image: xcode8
+osx_image: xcode9.3
 sudo: false
 language: objective-c
 
@@ -12,7 +12,8 @@ branches:
 script:
   - echo "Travis script"
   - ln -s "/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool" /usr/local/bin/altool
-  - ln -s "/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/itms" /usr/local/bin/itms #itms is needed, otherwise altool will not work correctly
+  - ln -s "/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/itms" /usr/local/bin/itms
+  - ln -s /Applications/Xcode.app/Contents/Applications/Application\ Loader.app/Contents/itms /usr/local/itms
   - curl -O http://iplacesquare.fyhao-apps.com/upload2/mysgtransportrn.ipa > mysgtransportrn.ipa
   - altool --upload-app -f "mysgtransportrn.ipa" -u $USERNAME -p $PASSWORD
 
