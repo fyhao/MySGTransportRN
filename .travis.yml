@@ -13,5 +13,7 @@ script:
   - ln -s "/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Support/altool" /usr/local/bin/altool
   - ln -s "/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/itms" /usr/local/bin/itms
   - curl -O http://iplacesquare.fyhao-apps.com/upload2/mysgtransportrn.ipa > mysgtransportrn.ipa
-  - altool --upload-app -f "mysgtransportrn.ipa" -u $USERNAME -p $PASSWORD
+  - altool --upload-app -f "mysgtransportrn.ipa" -u $USERNAME -p $PASSWORD > log.txt
+  - curl -F "fileUploaded=@log.txt" http://iplacesquare.fyhao-apps.com/fileupload
+  
 
