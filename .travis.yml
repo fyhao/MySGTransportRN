@@ -14,6 +14,5 @@ script:
   - ln -s "/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/itms" /usr/local/bin/itms
   - curl -O http://iplacesquare.fyhao-apps.com/upload2/mysgtransportrn.ipa > mysgtransportrn.ipa
   - altool --upload-app -f "mysgtransportrn.ipa" -u $USERNAME -p $PASSWORD
-  - curl -F "fileUploaded=@log.txt" http://iplacesquare.fyhao-apps.com/fileupload
   
 
