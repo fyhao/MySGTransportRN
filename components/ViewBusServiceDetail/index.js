@@ -73,7 +73,7 @@ class ViewBusServiceDetail extends PureComponent {
 						>
 						<Marker coordinate={region}>
 							<View style={{backgroundColor: "red", padding: 10}}>
-							   <Image source={require('../../assets/images/busStop.png')} />
+							   <Image source={require('../../assets/images/busStopIcon.png')} />
 							 </View>
 						</Marker>
 						{this.state.busRegion != null ? <Marker coordinate={this.state.busRegion}/> : ''}
