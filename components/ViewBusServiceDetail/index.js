@@ -8,7 +8,6 @@ class ViewBusServiceDetail extends PureComponent {
 	state = {
 		busService : null,
 		busStop : null,
-		busLocation : null,
 		busRegion : null,
 		loading : true
 	}
@@ -26,16 +25,13 @@ class ViewBusServiceDetail extends PureComponent {
 		    var busService = navigation.getParam('item');
 			var busStop = navigation.getParam('busStop');
 			await this.fetchBusLocation();
-			var busLocation = this.state.busLocation;
-			var busRegion = {
-				latitude : busLocation.Latitude,
-				longitude: busLocation.Longitude,
-				latitudeDelta: 0.0922,
-				longitudeDelta: 0.0421,
-			};
-			console.log(busRegion)
+			/*
+			setInterval(() => {
+				this.fetchBusLocation();
+			}, 1000);
+			*/
 			var loading = false;
-			this.setState({busService, busStop, busRegion, loading});
+			this.setState({busService, busStop, loading});
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
@@ -45,11 +41,18 @@ class ViewBusServiceDetail extends PureComponent {
 		var busLocation = {};
 		// mock data
 		// TODO to get real bus location data
+		var rands = [1,2,3,4,5]
 		busLocation = {
-			Latitude : navigation.getParam('busStop').Latitude + 0.0001,
-			Longitude : navigation.getParam('busStop').Longitude + 0.0005
+			Latitude : navigation.getParam('busStop').Latitude + 0.0001 * rands[Math.floor(Math.random()*rands.length)] ,
+			Longitude : navigation.getParam('busStop').Longitude + 0.0005 * rands[Math.floor(Math.random()*rands.length)]
 		};
-		this.setState({busLocation})
+		var busRegion = {
+			latitude : busLocation.Latitude,
+			longitude: busLocation.Longitude,
+			latitudeDelta: 0.0922,
+			longitudeDelta: 0.0421,
+		};
+		this.setState({busRegion})
 	}
     //Define your class component
     render() {
@@ -72,11 +75,15 @@ class ViewBusServiceDetail extends PureComponent {
 						style={{flex: 1}}
 						>
 						<Marker coordinate={region}>
-							<View style={{backgroundColor: "red", padding: 10}}>
-							   <Image source={require('../../assets/images/busStopIcon.png')} />
+							<View style={{padding: 1}}>
+							   <Image source={require('../../assets/images/busStopIcon.png')} style={{width: 30, height: 30}} />
 							 </View>
 						</Marker>
-						{this.state.busRegion != null ? <Marker coordinate={this.state.busRegion}/> : ''}
+						{this.state.busRegion != null ? <Marker coordinate={this.state.busRegion}>
+						<View style={{padding: 1}}>
+							   <Image source={require('../../assets/images/busIcon.png')} style={{width: 30, height: 30}} />
+							 </View>
+						</Marker> : ''}
 					</MapView>}
 				  </View>
             </ScrollView>
