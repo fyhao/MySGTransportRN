@@ -7,7 +7,7 @@ import styles from './styles';
 const BusStopCard = ({item, navigation}) => {
 	
     return (
-        <TouchableOpacity style={{backgroundColor: 'transparent'}} onPress={() => navigation.navigate('Pokemon', {name})}>
+        <TouchableOpacity style={{backgroundColor: 'transparent'}} onPress={() => navigation.navigate('BusStopDetail',{item:item})}>
             <View  style={styles.listItemContainer}>
                 <Text style={styles.pokeItemHeader}>{item.BusStopCode}</Text>
                 <Text style={styles.pokeItemHeader}>{item.Description}</Text>
