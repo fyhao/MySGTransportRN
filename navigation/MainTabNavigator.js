@@ -8,6 +8,7 @@ import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import BusStopList from '../components/BusStopList';
 import BusStopDetail from '../components/BusStopDetail';
+import ViewBusServiceDetail from '../components/ViewBusServiceDetail';
 const config = Platform.select({
   web: { headerMode: 'screen' },
   default: {},
@@ -18,6 +19,7 @@ const HomeStack = createStackNavigator(
     Home: BusStopList,
 	BusStopList: BusStopList,
 	BusStopDetail: BusStopDetail,
+	ViewBusServiceDetail : ViewBusServiceDetail
   },
   config
 );

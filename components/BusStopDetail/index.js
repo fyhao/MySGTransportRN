@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 //import UI from react-native
-import { View, ScrollView, Text, Image, FlatList } from 'react-native';
+import { View, ScrollView, Text, Image, FlatList,TouchableOpacity } from 'react-native';
 //import styles for component.
 import styles from './styles';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
@@ -38,6 +38,8 @@ class BusStopDetail extends PureComponent {
 		  latitudeDelta: 0.0922,
 		  longitudeDelta: 0.0421,
 		};
+		var itemHolder = {};
+		
         return (
             <ScrollView style={{flex: 1}}>
                 <Text>{navigation.getParam('item').Description}</Text>
@@ -56,11 +58,12 @@ class BusStopDetail extends PureComponent {
 				  
 				  {this.state.loading ? <Text>Loading...</Text> : <FlatList 
                     data={this.state.services}
-                    renderItem={(data) => <View>
+                    renderItem={(data) => 
+					<TouchableOpacity style={{backgroundColor: 'transparent'}} onPress={() => navigation.navigate('ViewBusServiceDetail',{item:data.item,busStop:navigation.getParam('item')})}>
+					<View>
 						<Text>Service No: {data.item.ServiceNo}</Text>
-						<Text>Category: {data.item.Category}</Text>
-						<Text>Operator: {data.item.Operator}</Text>
-					</View>}
+					</View>
+					</TouchableOpacity>}
                     keyExtractor={(item) => item.ServiceNo} 
 				  />}
             </ScrollView>
