@@ -77,12 +77,15 @@ class ViewBusServiceDetail extends PureComponent {
 		var busRoutes = [];
 		for(var i = 0; i < routes.length; i++) {
 			var r = routes[i];
+			r.key = i;
 			if(r.ServiceNo == serviceNo) {
 				for(var j = 0; j < stops.length; j++) {
 					var s = stops[j];
 					if(s.BusStopCode == r.BusStopCode) {
 						r.latitude = s.Latitude;
 						r.longitude = s.Longitude;
+						r.latitudeDelta = 0.0922;
+						r.longitudeDelta = 0.0421;
 					}
 				}
 				busRoutes.push(r);
@@ -139,6 +142,13 @@ class ViewBusServiceDetail extends PureComponent {
 							]}
 							strokeWidth={6}
 						/> : (null)}
+						{this.state.busRoutes != null ? this.state.busRoutes.map((r,i) => (
+							<Marker coordinate={r} key={i}>
+							<View style={{padding: 1}}>
+							   <Image source={require('../../assets/images/busStopIcon.png')} style={{width: 30, height: 30}} />
+							 </View>
+						</Marker>
+						)) : (null)}
 					</MapView>}
 				  </View>
             </ScrollView>
