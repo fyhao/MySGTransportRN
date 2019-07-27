@@ -3,10 +3,12 @@ import React, { PureComponent } from 'react';
 import { View, ScrollView, Text, Image, FlatList,TouchableOpacity } from 'react-native';
 //import styles for component.
 import styles from './styles';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
+import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps'
 class BusStopDetail extends PureComponent {
 	state = {
 		services : [],
+		stops : null,
+		nearbyBusStopList : null,
 		loading : true
 	}
     //Define your navigationOptions as a functino to have access to navigation properties, since it is static.
@@ -20,13 +22,36 @@ class BusStopDetail extends PureComponent {
 			const { navigation } = this.props;
             const data = require('../../assets/data/stopServiceData.json');
 			var busStopCode = navigation.getParam('item').BusStopCode;
+			var nearbyBusStopList = navigation.getParam('nearbyBusStopList');
+			console.log('busstopdetail: ' + nearbyBusStopList.length)
 			var services = data[busStopCode];
 			var loading = false;
+
 			this.setState({services, loading});
+			
+			await this.calculateNearbyBusStops(nearbyBusStopList);
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
     }
+	async calculateNearbyBusStops(n) {
+		var nearbyBusStopList = [];
+		n.map(r => {
+			var rr = {};
+			for(var k in r) {
+				rr[k] = r[k];
+			}
+			nearbyBusStopList.push(rr)
+		});
+		for(var i = 0; i < nearbyBusStopList.length; i++) {
+			var n = nearbyBusStopList[i];
+			n.latitude = n.Latitude;
+			n.longitude = n.Longitude;
+			n.latitudeDelta = 0.0922;
+			n.longitudeDelta = 0.0421;
+		}
+		this.state.nearbyBusStopList = nearbyBusStopList;
+	}
     //Define your class component
     render() {
 		const { navigation } = this.props;
@@ -52,7 +77,19 @@ class BusStopDetail extends PureComponent {
 						showsTraffic={true}
 						style={{flex: 1}}
 						>
-						<Marker coordinate={region}/>
+						<Marker coordinate={region}>
+							<View style={{padding: 1}}>
+							   <Image source={require('../../assets/images/busStopIcon.png')} style={{width: 30, height: 30}} />
+							 </View>
+						</Marker>
+						{this.state.nearbyBusStopList != null ? this.state.nearbyBusStopList.map((r,i) => (
+							<Marker coordinate={r} key={i}>
+							<View style={{padding: 1}}>
+							   <Image source={require('../../assets/images/busStopIcon.png')} style={{width: 30, height: 30}} />
+							 </View>
+							 <Callout><Text>{r.Description}</Text></Callout>
+						</Marker>
+						)) : (null)}
 					</MapView>
 				  </View>
 				  

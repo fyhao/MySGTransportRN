@@ -4,10 +4,10 @@ import { TouchableOpacity, Text, View, Image } from 'react-native';
 import styles from './styles';
 
 //Define your stateless componetns, and destrcuts props from function arguments
-const BusStopCard = ({item, navigation}) => {
+const BusStopCard = ({item, nearbyBusStopList, navigation}) => {
 	
     return (
-        <TouchableOpacity style={{backgroundColor: 'transparent'}} onPress={() => navigation.navigate('BusStopDetail',{item:item})}>
+        <TouchableOpacity style={{backgroundColor: 'transparent'}} onPress={() => navigation.navigate('BusStopDetail',{item:item, nearbyBusStopList:nearbyBusStopList})}>
             <View  style={styles.listItemContainer}>
                 <Text style={styles.itemHeader}>{item.BusStopCode}</Text>
                 <Text style={styles.itemHeader}>{item.Description}</Text>

@@ -95,7 +95,7 @@ export default class BusStopList extends PureComponent {
 		var location = this.state.location;
 		var myLocation = {Latitude:location.coords.latitude, Longitude:location.coords.longitude};
 		var newList = [];
-		var nearLimit = 0.2;
+		var nearLimit = 0.5;
 		//console.log('filtering within ' + nearLimit + ' metre data');
 		for(var i = 0; i < busStopList.length; i++) {
 			var stop = busStopList[i];
@@ -106,6 +106,9 @@ export default class BusStopList extends PureComponent {
 				newList.push(stop);
 			}
 		}
+		newList.sort(function(a,b) {
+			return a.myDistanceInMetre - b.myDistanceInMetre;
+		});
 		busStopList = null;
 		this.setState({busStopList:newList,busStopLastUpdated:new Date().toString()});
 	};
@@ -156,7 +159,7 @@ export default class BusStopList extends PureComponent {
         if(!loading) {
             return <View><FlatList 
                     data={busStopList}
-                    renderItem={(data) => <BusStopCard item={data.item} navigation={navigation} />}
+                    renderItem={(data) => <BusStopCard item={data.item} nearbyBusStopList={busStopList} navigation={navigation} />}
                     keyExtractor={(item) => item.BusStopCode} 
                     />
 					<Text style={{textAlign:"center",fontSize:18}}>{debugText}</Text>
