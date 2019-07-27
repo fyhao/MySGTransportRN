@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import { View, ScrollView, Text, Image, FlatList } from 'react-native';
 //import styles for component.
 import styles from './styles';
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps'
+import MapView, { Marker, Polyline, Callout, PROVIDER_GOOGLE } from 'react-native-maps'
 class ViewBusServiceDetail extends PureComponent {
 	state = {
 		busService : null,
@@ -84,6 +84,7 @@ class ViewBusServiceDetail extends PureComponent {
 					if(s.BusStopCode == r.BusStopCode) {
 						r.latitude = s.Latitude;
 						r.longitude = s.Longitude;
+						r.Description = s.Description;
 						r.latitudeDelta = 0.0922;
 						r.longitudeDelta = 0.0421;
 					}
@@ -147,6 +148,7 @@ class ViewBusServiceDetail extends PureComponent {
 							<View style={{padding: 1}}>
 							   <Image source={require('../../assets/images/busStopIcon.png')} style={{width: 30, height: 30}} />
 							 </View>
+							 <Callout><Text>{r.Description}</Text></Callout>
 						</Marker>
 						)) : (null)}
 					</MapView>}
