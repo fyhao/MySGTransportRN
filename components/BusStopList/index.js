@@ -48,8 +48,8 @@ export default class BusStopList extends PureComponent {
 			const data = require('../../assets/data/stops.json');
             this.setState({busStopList: data});
 			this._getLocationAsync();
-			if(DeviceMotion.isAvailableAsync()) {
-				DeviceMotion.setUpdateInterval(2000); // fast = 16, slow = 1000
+			if(false && DeviceMotion.isAvailableAsync()) {
+				DeviceMotion.setUpdateInterval(3000); // fast = 16, slow = 1000
 				this._subscription = DeviceMotion.addListener(accelerometerData => {
 				  this.setState({ accelerometerData });
 				  this.calculateIfUserMovingThenUpdateLocation();
@@ -126,7 +126,7 @@ export default class BusStopList extends PureComponent {
 			else {
 				mData.lastCheckCount = 0;
 			}
-			if(mData.lastCheckCount > 1) {
+			if(mData.lastCheckCount > 10) {
 				console.log('Found target count, executing');
 				mData.lastCheckCount = 0;
 				this._getLocationAsync();
