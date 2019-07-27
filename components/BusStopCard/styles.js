@@ -11,15 +11,14 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         padding: 20
     },
-    pokeItemHeader: {  
+    itemHeader: {  
         color: '#000',
         fontSize: 24,
     },
-    pokeImage: {
-        backgroundColor: 'transparent',
-        height: 50,
-        width: 50
-    }
+	distanceText: {  
+        color: '#ff0000',
+        fontSize: 12,
+    },
 })
 
 export default styles;

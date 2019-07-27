@@ -9,8 +9,9 @@ const BusStopCard = ({item, navigation}) => {
     return (
         <TouchableOpacity style={{backgroundColor: 'transparent'}} onPress={() => navigation.navigate('BusStopDetail',{item:item})}>
             <View  style={styles.listItemContainer}>
-                <Text style={styles.pokeItemHeader}>{item.BusStopCode}</Text>
-                <Text style={styles.pokeItemHeader}>{item.Description}</Text>
+                <Text style={styles.itemHeader}>{item.BusStopCode}</Text>
+                <Text style={styles.itemHeader}>{item.Description}</Text>
+				<Text style={styles.distanceText}>{item.myDistanceInMetre}m</Text>
             </View>
         </TouchableOpacity>
     )

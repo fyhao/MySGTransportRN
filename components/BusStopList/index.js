@@ -7,21 +7,35 @@ import {  FlatList, ActivityIndicator, Text, View} from 'react-native';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
+import * as TaskManager from 'expo-task-manager';
+import {
+  Accelerometer,
+  Barometer,
+  Gyroscope,
+  Magnetometer,
+  MagnetometerUncalibrated,
+  Pedometer,
+  DeviceMotion
+} from 'expo-sensors';
 
 export default class BusStopList extends PureComponent {
 	//Define your state for your component. 
     state = {
         //Assing a array to your pokeList state
         busStopList: [],
+		busStopLastUpdated : null,
         //Have a loading state where when data retrieve returns data. 
         loading: true,
 		location : null,
-		errorMessage : null
+		errorMessage : null,
+		accelerometerData: {},
+		mData : {}
     }
     //Define your navigation options in a form of a method so you have access to navigation props.
     static navigationOptions = {
         title: 'Nearby Bus Stops'
     }
+	
     //Define your componentDidMount lifecycle hook that will retrieve data.
     //Also have the async keyword to indicate that it is asynchronous. 
     async componentDidMount() {
@@ -34,6 +48,13 @@ export default class BusStopList extends PureComponent {
 			const data = require('../../assets/data/stops.json');
             this.setState({busStopList: data});
 			this._getLocationAsync();
+			if(DeviceMotion.isAvailableAsync()) {
+				DeviceMotion.setUpdateInterval(2000); // fast = 16, slow = 1000
+				this._subscription = DeviceMotion.addListener(accelerometerData => {
+				  this.setState({ accelerometerData });
+				  this.calculateIfUserMovingThenUpdateLocation();
+				});
+			}
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
@@ -45,12 +66,15 @@ export default class BusStopList extends PureComponent {
 			errorMessage: 'Permission to access location was denied',
 		  });
 		}
-
-		let location = await Location.getCurrentPositionAsync({});
+		this.setState({loading:true});
+		let location = await Location.getCurrentPositionAsync({});	
+		this.filterNearbyBusStopByLocation(location);
+	  };
+	filterNearbyBusStopByLocation = async (location) => {
 		this.setState({ location });
 		this.filterNearbyBusStop();
 		this.setState({loading:false});
-	  };
+	};
 	distance = (pos1,pos2) => {
 		var lat1 = pos1.Latitude;
 		var lon1 = pos1.Longitude;
@@ -78,11 +102,39 @@ export default class BusStopList extends PureComponent {
 			var d = this.distance(stop, myLocation);
 			if(d < nearLimit) {
 				//console.log(JSON.stringify(stop) + "," + d);
+				stop.myDistanceInMetre = Math.round(d * 1000);
 				newList.push(stop);
 			}
 		}
 		busStopList = null;
-		this.setState({busStopList:newList});
+		this.setState({busStopList:newList,busStopLastUpdated:new Date().toString()});
+	};
+	
+	
+	calculateIfUserMovingThenUpdateLocation = async () => {
+		var accelerometerData = this.state.accelerometerData;
+		var {x,y,z} = accelerometerData.acceleration;
+		//console.log(x + "," + y + "," + z);
+		var mData = this.state.mData;
+		if(x > 1 || y > 1 || z > 1) {
+			if(!mData.lastCheckTime) mData.lastCheckTime = new Date().getTime();
+			if(!mData.lastCheckCount) mData.lastCheckCount = 0;
+			var now = new Date().getTime();
+			if(now - mData.lastCheckTime < 5 * 1000) {
+				mData.lastCheckCount++;
+			}
+			else {
+				mData.lastCheckCount = 0;
+			}
+			if(mData.lastCheckCount > 1) {
+				console.log('Found target count, executing');
+				mData.lastCheckCount = 0;
+				this._getLocationAsync();
+			}
+			mData.lastCheckTime = new Date().getTime();;
+		}
+		
+		this.setState({mData});
 	};
     render() {
         const { busStopList, loading } = this.state;
@@ -99,8 +151,8 @@ export default class BusStopList extends PureComponent {
 		} else if (this.state.location) {
 		  debugText = JSON.stringify(this.state.location);
 		}
-		debugText = '';
-		
+		debugText = 'Last Updated: ' + this.state.busStopLastUpdated;
+		//debugText = JSON.stringify(this.state.accelerometerData);
         if(!loading) {
             return <View><FlatList 
                     data={busStopList}
