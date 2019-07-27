@@ -3,12 +3,15 @@ import React, { PureComponent } from 'react';
 import { View, ScrollView, Text, Image, FlatList } from 'react-native';
 //import styles for component.
 import styles from './styles';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps'
 class ViewBusServiceDetail extends PureComponent {
 	state = {
 		busService : null,
 		busStop : null,
 		busRegion : null,
+		routes : null, // entire routes
+		stops : null, // entire stops
+		busRoutes : null, // only this bus routes
 		loading : true
 	}
     //Define your navigationOptions as a functino to have access to navigation properties, since it is static.
@@ -20,18 +23,22 @@ class ViewBusServiceDetail extends PureComponent {
         //Have a try and catch block for catching errors.
         try {
 			const { navigation } = this.props;
-            //console.log(navigation.getParam('item'))
-		    //console.log(navigation.getParam('busStop'))
+            console.log(navigation.getParam('item'))
+		    console.log(navigation.getParam('busStop'))
 		    var busService = navigation.getParam('item');
 			var busStop = navigation.getParam('busStop');
+			
+			var loading = false;
+			this.setState({busService, busStop, loading});
+			
 			await this.fetchBusLocation();
+			await this.calculateBusRoutes();
+			
 			/*
 			setInterval(() => {
 				this.fetchBusLocation();
 			}, 1000);
 			*/
-			var loading = false;
-			this.setState({busService, busStop, loading});
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
@@ -53,6 +60,41 @@ class ViewBusServiceDetail extends PureComponent {
 			longitudeDelta: 0.0421,
 		};
 		this.setState({busRegion})
+	}
+	async calculateBusRoutes() {
+		var routes = null;
+		if(this.state.routes == null) {
+			routes = require('../../assets/data/routes.json');
+			this.setState({routes})
+		}
+		var stops = null;
+		if(this.state.stops == null) {
+			stops = require('../../assets/data/stops.json');
+			this.setState({stops})
+		}
+		var serviceNo = this.state.busService.ServiceNo;
+		var busStopCode = this.state.busStop.BusStopCode;
+		var busRoutes = [];
+		for(var i = 0; i < routes.length; i++) {
+			var r = routes[i];
+			if(r.ServiceNo == serviceNo) {
+				for(var j = 0; j < stops.length; j++) {
+					var s = stops[j];
+					if(s.BusStopCode == r.BusStopCode) {
+						r.latitude = s.Latitude;
+						r.longitude = s.Longitude;
+					}
+				}
+				busRoutes.push(r);
+			}
+		}
+		for(var i = 0; i < busRoutes.length; i++) {
+			console.log(busRoutes[i]);
+			break;
+		}
+		console.log(busRoutes)
+		// TODO, a problem raised now, the bus routes did not follow the actual road condition
+		this.setState({busRoutes})
 	}
     //Define your class component
     render() {
@@ -83,7 +125,20 @@ class ViewBusServiceDetail extends PureComponent {
 						<View style={{padding: 1}}>
 							   <Image source={require('../../assets/images/busIcon.png')} style={{width: 30, height: 30}} />
 							 </View>
-						</Marker> : ''}
+						</Marker> : (null)}
+						{this.state.busRoutes != null ? <Polyline
+							coordinates={this.state.busRoutes}
+							strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
+							strokeColors={[
+								'#7F0000',
+								'#00000000', // no color, creates a "long" gradient between the previous and next coordinate
+								'#B24112',
+								'#E5845C',
+								'#238C23',
+								'#7F0000'
+							]}
+							strokeWidth={6}
+						/> : (null)}
 					</MapView>}
 				  </View>
             </ScrollView>
