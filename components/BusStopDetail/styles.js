@@ -11,15 +11,19 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         padding: 20
     },
-    pokeItemHeader: {  
-        color: '#000',
-        fontSize: 24,
-    },
-    pokeImage: {
-        backgroundColor: 'transparent',
-        height: 50,
-        width: 50
-    }
+	ServiceNoBox : {
+		padding:5,
+		flex: 1, flexDirection: 'row'
+	},
+	ServiceNoLeftBox : {
+		backgroundColor:'green',
+		width:10,
+		height:40
+	},
+	ServiceNoText : {
+		fontSize:20,
+		paddingLeft:10
+	},
 })
 
 export default styles;

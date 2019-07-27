@@ -23,8 +23,9 @@ class BusStopDetail extends PureComponent {
             const data = require('../../assets/data/stopServiceData.json');
 			var busStopCode = navigation.getParam('item').BusStopCode;
 			var nearbyBusStopList = navigation.getParam('nearbyBusStopList');
-			console.log('busstopdetail: ' + nearbyBusStopList.length)
+			
 			var services = data[busStopCode];
+			console.log(services)
 			var loading = false;
 
 			this.setState({services, loading});
@@ -97,8 +98,9 @@ class BusStopDetail extends PureComponent {
                     data={this.state.services}
                     renderItem={(data) => 
 					<TouchableOpacity style={{backgroundColor: 'transparent'}} onPress={() => navigation.navigate('ViewBusServiceDetail',{item:data.item,busStop:navigation.getParam('item')})}>
-					<View>
-						<Text>Service No: {data.item.ServiceNo}</Text>
+					<View style={styles.ServiceNoBox}>
+						<View style={styles.ServiceNoLeftBox}/>
+						<Text style={styles.ServiceNoText}>{data.item.ServiceNo}</Text>
 					</View>
 					</TouchableOpacity>}
                     keyExtractor={(item) => item.ServiceNo} 
