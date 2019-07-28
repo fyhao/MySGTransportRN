@@ -90,7 +90,9 @@ class BusStopDetail extends PureComponent {
 					//svc.NextBusArrival = res.NextBus.EstimatedArrival;
 					//svc.NextBus2Arrival = res.NextBus2.EstimatedArrival;
 					//svc.NextBus3Arrival = res.NextBus3.EstimatedArrival;
-					
+					svc.NextBusLocation = {latitude:res.NextBus.Latitude,longitude:res.NextBus.Longitude};
+					svc.NextBus2Location = {latitude:res.NextBus2.Latitude,longitude:res.NextBus2.Longitude};
+					svc.NextBus3Location = {latitude:res.NextBus3.Latitude,longitude:res.NextBus3.Longitude};
 					var now = new Date();
 					try {
 						if(res.NextBus.EstimatedArrival != '') {
@@ -167,13 +169,6 @@ class BusStopDetail extends PureComponent {
 			if(svc.NextBusArrival == 0) svc.NextBusProgress = 0;
 			if(svc.NextBus2Arrival == 0) svc.NextBus2Progress = 0;
 			if(svc.NextBus3Arrival == 0) svc.NextBus3Progress = 0;
-		}
-		for(var i = 0; i < services.length; i++) {
-			var svc = services[i];
-			if(svc.ServiceNo == '66') {
-				console.log(svc);
-			}
-			
 		}
 		this.setState({services})
 	};

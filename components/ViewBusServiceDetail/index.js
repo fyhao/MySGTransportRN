@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 //import UI from react-native
-import { View, ScrollView, Text, Image, FlatList } from 'react-native';
+import { View, ScrollView, Text, Image, FlatList,ProgressViewIOS } from 'react-native';
 //import styles for component.
 import styles from './styles';
 import MapView, { Marker, Polyline, Callout, PROVIDER_GOOGLE } from 'react-native-maps'
@@ -27,7 +27,7 @@ class ViewBusServiceDetail extends PureComponent {
 		    //console.log(navigation.getParam('busStop'))
 		    var busService = navigation.getParam('item');
 			var busStop = navigation.getParam('busStop');
-			
+			console.log(busService);
 			var loading = false;
 			this.setState({busService, busStop, loading});
 			
@@ -48,16 +48,23 @@ class ViewBusServiceDetail extends PureComponent {
 		var busLocation = {};
 		// mock data
 		// TODO to get real bus location data
+		/*
 		var rands = [1,2,3,4,5]
 		busLocation = {
 			Latitude : navigation.getParam('busStop').Latitude + 0.0001 * rands[Math.floor(Math.random()*rands.length)] ,
 			Longitude : navigation.getParam('busStop').Longitude + 0.0005 * rands[Math.floor(Math.random()*rands.length)]
 		};
+		*/
+		var busService = navigation.getParam('item');
+		busLocation = {
+			Latitude : parseFloat(busService.NextBusLocation.latitude),
+			Longitude: parseFloat(busService.NextBusLocation.longitude)
+		};
 		var busRegion = {
 			latitude : busLocation.Latitude,
 			longitude: busLocation.Longitude,
-			latitudeDelta: 0.0922,
-			longitudeDelta: 0.0421,
+			latitudeDelta: 9.0922,
+			longitudeDelta: 9.0421,
 		};
 		this.setState({busRegion})
 	}
@@ -92,10 +99,6 @@ class ViewBusServiceDetail extends PureComponent {
 				busRoutes.push(r);
 			}
 		}
-		for(var i = 0; i < busRoutes.length; i++) {
-			console.log(busRoutes[i]);
-			break;
-		}
 		//console.log(busRoutes)
 		// TODO, a problem raised now, the bus routes did not follow the actual road condition
 		this.setState({busRoutes})
@@ -112,9 +115,9 @@ class ViewBusServiceDetail extends PureComponent {
 		};
         return (
             <ScrollView style={{flex: 1}}>
-                <Text>{navigation.getParam('item').ServiceNo}</Text>
 				<View style={{height: 400}}>
-					{this.state.loading ? <Text>Loading</Text> : <MapView 
+					{this.state.loading ? <Text>Loading</Text> : <View style={{flex: 1}}>
+						<MapView 
 						initialRegion={region}
 						showsUserLocation={true}
 						followsUserLocation={isNearBy}
@@ -152,7 +155,30 @@ class ViewBusServiceDetail extends PureComponent {
 							 <Callout><Text>{r.Description}</Text></Callout>
 						</Marker>
 						)) : (null)}
-					</MapView>}
+						</MapView>
+						
+						<View style={styles.ServiceNoBox}>
+							<View style={styles.ServiceNoLeftBox}/>
+							<View style={styles.ServiceNoRightBox}>
+								<Text style={styles.ServiceNoText}>{this.state.busService.ServiceNo}</Text>
+								<Text style={styles.ServiceLastStop}>To {this.state.busService.lastStop}</Text>
+							</View>
+							<View style={styles.ServiceNoNextArrival}>
+								<View style={styles.ArrivalBox}>
+									<ProgressViewIOS style={styles.ArrivalProgress} trackTintColor='#ffcccc' progressTintColor='orange' progress={this.state.busServiceNextBusProgress} width={50}/>
+									<Text style={styles.ArrivalText}>{this.state.busService.NextBusArrival}</Text>
+								</View>
+								<View style={styles.ArrivalBox}>
+									<ProgressViewIOS style={styles.ArrivalProgress} trackTintColor='#ffcccc' progressTintColor='orange' progress={this.state.busService.NextBus2Progress} width={50}/>
+									<Text style={styles.ArrivalText}>{this.state.busService.NextBus2Arrival}</Text>
+								</View>
+								<View style={styles.ArrivalBox}>
+									<ProgressViewIOS style={styles.ArrivalProgress} trackTintColor='#ffcccc' progressTintColor='orange' progress={this.state.busService.NextBus3Progress} width={50}/>
+									<Text style={styles.ArrivalText}>{this.state.busService.NextBus3Arrival}</Text>
+								</View>
+							</View>
+						</View>
+					</View>}
 				  </View>
             </ScrollView>
         );
