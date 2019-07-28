@@ -13,7 +13,7 @@ const SearchResultCard = ({item, nearbyBusStopList, navigation}) => {
 			});
 		}
 		return (
-			<TouchableOpacity style={styles.Container} onPress={() => navigation.navigate('BusStopDetail',{item:item, nearbyBusStopList:nearbyBusStopList})}>
+			<TouchableOpacity style={styles.Container} onPress={() => navigation.navigate('BusStopDetail',{item:item, nearbyBusStopList:nearbyBusStopList, isNearBy:false})}>
 				<View style={styles.LeftBox}/>
 				<View style={styles.RightBox}>
 					<View  style={styles.listItemContainer}>

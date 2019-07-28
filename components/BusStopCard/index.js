@@ -12,7 +12,7 @@ const BusStopCard = ({item, nearbyBusStopList, navigation}) => {
 		});
 	}
     return (
-        <TouchableOpacity style={styles.Container} onPress={() => navigation.navigate('BusStopDetail',{item:item, nearbyBusStopList:nearbyBusStopList})}>
+        <TouchableOpacity style={styles.Container} onPress={() => navigation.navigate('BusStopDetail',{item:item, nearbyBusStopList:nearbyBusStopList, isNearBy:true})}>
 			<View style={styles.LeftBox}/>
 			<View style={styles.RightBox}>
 				<View  style={styles.listItemContainer}>

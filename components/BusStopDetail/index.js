@@ -102,7 +102,7 @@ class BusStopDetail extends PureComponent {
     //Define your class component
     render() {
 		const { navigation } = this.props;
-		
+		var isNearBy = navigation.getParam('isNearBy');
 		
         var region={
 		  latitude: navigation.getParam('item').Latitude,
@@ -129,7 +129,7 @@ class BusStopDetail extends PureComponent {
 					<MapView 
 						initialRegion={region}
 						showsUserLocation={true}
-						followsUserLocation={true}
+						followsUserLocation={isNearBy}
 						showsTraffic={true}
 						style={{flex: 1}}
 						>
@@ -152,7 +152,7 @@ class BusStopDetail extends PureComponent {
 				  {this.state.loading ? <Text>Loading...</Text> : <FlatList 
                     data={this.state.services}
                     renderItem={(data) => 
-					<TouchableOpacity style={{backgroundColor: 'transparent'}} onPress={() => navigation.navigate('ViewBusServiceDetail',{item:data.item,busStop:navigation.getParam('item')})}>
+					<TouchableOpacity style={{backgroundColor: 'transparent'}} onPress={() => navigation.navigate('ViewBusServiceDetail',{item:data.item,busStop:navigation.getParam('item'),isNearBy:isNearBy})}>
 					<View style={styles.ServiceNoBox}>
 						<View style={styles.ServiceNoLeftBox}/>
 						<View style={styles.SerivceNoRightBox}>

@@ -103,6 +103,7 @@ class ViewBusServiceDetail extends PureComponent {
     //Define your class component
     render() {
 		const { navigation } = this.props;
+		var isNearBy = navigation.getParam('isNearBy');
 		var region={
 		  latitude: navigation.getParam('busStop').Latitude,
 		  longitude: navigation.getParam('busStop').Longitude,
@@ -116,7 +117,7 @@ class ViewBusServiceDetail extends PureComponent {
 					{this.state.loading ? <Text>Loading</Text> : <MapView 
 						initialRegion={region}
 						showsUserLocation={true}
-						followsUserLocation={true}
+						followsUserLocation={isNearBy}
 						showsTraffic={true}
 						style={{flex: 1}}
 						>
