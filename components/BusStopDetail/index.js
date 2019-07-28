@@ -76,10 +76,19 @@ class BusStopDetail extends PureComponent {
 		  longitudeDelta: 0.0421,
 		};
 		var itemHolder = {};
-		
         return (
             <ScrollView style={{flex: 1}}>
-                <Text>{navigation.getParam('item').Description}</Text>
+				<View style={styles.BusStopHeader}>
+					<View style={styles.BusStopHeaderRow1}>
+						<Text style={styles.BusStopDescHeading}>{navigation.getParam('item').Description}</Text>
+					</View>
+					<View style={styles.BusStopHeaderRow2}>
+						<Text style={styles.BusStopCodeHeading}>{navigation.getParam('item').BusStopCode}</Text>
+						<Text style={styles.BusStopRoadNameHeading}>{navigation.getParam('item').RoadName}</Text>
+						<Text style={styles.BusStopDistanceHeading}>{navigation.getParam('item').myDistanceInMetre}m</Text>
+					</View>
+				</View>
+                
 				
 				<View style={{height: 400}}>
 					<MapView 

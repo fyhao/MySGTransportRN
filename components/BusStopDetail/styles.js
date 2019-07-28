@@ -9,8 +9,28 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        padding: 20
+        padding: 25
     },
+	BusStopDescHeading : {
+		fontSize:30,
+	},
+	BusStopHeader : {
+		flex: 1, flexDirection: 'column', 
+		backgroundColor:'#eee',
+	},
+	BusStopHeaderRow1 : {
+		flex: 1, flexDirection: 'row',paddingLeft:90,
+	},
+	BusStopHeaderRow2 : {
+		flex: 1, flexDirection: 'row',paddingLeft:10
+	},
+	BusStopCodeHeading : {flex: 1},
+	BusStopRoadNameHeading : {flex: 1},
+	BusStopDistanceHeading : {
+		
+		paddingRight:10,
+		color:'red',
+	},
 	ServiceNoBox : {
 		padding:5,
 		flex: 1, flexDirection: 'row'
