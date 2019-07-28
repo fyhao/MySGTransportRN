@@ -2,6 +2,7 @@
 import React, { PureComponent } from 'react';
 //import components
 import BusStopCard from '../BusStopCard';
+import SearchResultCard from '../SearchResultCard';
 //import your components from react-native 
 import {  FlatList, ActivityIndicator, Text, View} from 'react-native';
 import { SearchBar } from 'react-native-elements';
@@ -31,7 +32,8 @@ export default class BusStopList extends PureComponent {
 		errorMessage : null,
 		accelerometerData: {},
 		mData : {},
-		searchText : ''
+		searchText : '',
+		searchResultList : []
     }
     //Define your navigation options in a form of a method so you have access to navigation props.
     static navigationOptions = {
@@ -153,7 +155,9 @@ export default class BusStopList extends PureComponent {
 	};
 	
 	updateSearch = searchText => {
-		this.setState({ searchText });
+		var searchResultList = [];
+		searchResultList = [this.state.busStopList[0]]
+		this.setState({ searchText, searchResultList });
 	};
     render() {
         const { busStopList, loading } = this.state;
@@ -163,7 +167,7 @@ export default class BusStopList extends PureComponent {
         //Data contains the data being  mapped over.
         //RenderItem a callback return UI for each item.
         //keyExtractor used for giving a unique identifier for each item.
-		const {searchText} = this.state;
+		const {searchText, searchResultList} = this.state;
 		
 		let debugText = 'Waiting..';
 		if (this.state.errorMessage) {
@@ -183,11 +187,19 @@ export default class BusStopList extends PureComponent {
 						cancelButtonTitle="Cancel"
 						platform="ios"
 					  />
-					<FlatList 
-                    data={busStopList}
-                    renderItem={(data) => <BusStopCard item={data.item} nearbyBusStopList={busStopList} navigation={navigation} />}
-                    keyExtractor={(item) => item.BusStopCode} 
-                    />
+					  {searchText.length > 0 ? (
+						<FlatList 
+						data={searchResultList}
+						renderItem={(data) => <SearchResultCard item={data.item} nearbyBusStopList={busStopList} navigation={navigation} />}
+						keyExtractor={(item) => item.BusStopCode} 
+						/>
+					  ) : (
+						<FlatList 
+						data={busStopList}
+						renderItem={(data) => <BusStopCard item={data.item} nearbyBusStopList={busStopList} navigation={navigation} />}
+						keyExtractor={(item) => item.BusStopCode} 
+						/>
+					  )}
 					<Text style={{textAlign:"center",fontSize:18}}>{debugText}</Text>
 					</View>
         } else {
