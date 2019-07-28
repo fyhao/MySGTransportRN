@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        paddingLeft: 10,
+        paddingLeft: 5,
 		
     },
 	listItemContainer2: {
@@ -24,10 +24,17 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         flexDirection: 'row',
     },
+	listItemContainer3: {
+        backgroundColor: '#fff',
+        borderStyle: 'solid',
+        borderColor: '#fff',
+        borderBottomWidth: 2,
+        flexDirection: 'row',
+    },
 	LeftBox : {
 		backgroundColor:'green',
 		width:10,
-		height:60
+		height:80
 	},
 	RightBox : {
 		flex:1,flexDirection:'column'
@@ -36,10 +43,14 @@ const styles = StyleSheet.create({
 		paddingLeft:5,
 		color:'green'
 	},
+	roadNameText : {
+		paddingLeft:5,
+		color:'#666',
+	},
     itemHeader: {  
         color: '#000',
         fontSize: 20,
-		padding:10,
+		padding:5,
     },
 	distanceText: {  
         color: '#ff0000',

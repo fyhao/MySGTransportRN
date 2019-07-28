@@ -21,6 +21,9 @@ const BusStopCard = ({item, nearbyBusStopList, navigation}) => {
 					<Text style={styles.distanceText}>{item.myDistanceInMetre}m</Text>
 				</View>
 				<View  style={styles.listItemContainer2}>
+					<Text style={styles.roadNameText}>{item.RoadName}</Text>
+				</View>
+				<View  style={styles.listItemContainer3}>
 					{serviceNoList.map((r,i) => (
 						<Text style={styles.serviceNo} key={i}>{r}</Text>
 					))}
