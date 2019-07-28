@@ -156,8 +156,52 @@ export default class BusStopList extends PureComponent {
 	
 	updateSearch = searchText => {
 		var searchResultList = [];
-		searchResultList = [this.state.busStopList[0]]
+		// Search bus stop first, then search bus services
+		for(var i = 0; i < this.state.busStopList.length; i++) {
+			var bs = this.state.busStopList[i];
+			if(bs.BusStopCode.indexOf(searchText) > -1) {
+				var item = this.cloneObj(bs);
+				item.searchItemType = 'busStop';
+				searchResultList.push(item);
+			}
+		}
+		//searchResultList = [this.state.busStopList[0]]
+		//searchResultList[0].searchItemType = 'busStop';
+		//console.log(this.state.busStopList[0])
 		this.setState({ searchText, searchResultList });
+	};
+	cloneObj(obj) {
+		var copy;
+
+		// Handle the 3 simple types, and null or undefined
+		if (null == obj || "object" != typeof obj) return obj;
+
+		// Handle Date
+		if (obj instanceof Date) {
+			copy = new Date();
+			copy.setTime(obj.getTime());
+			return copy;
+		}
+
+		// Handle Array
+		if (obj instanceof Array) {
+			copy = [];
+			for (var i = 0, len = obj.length; i < len; i++) {
+				copy[i] = this.cloneObj(obj[i]);
+			}
+			return copy;
+		}
+
+		// Handle Object
+		if (obj instanceof Object) {
+			copy = {};
+			for (var attr in obj) {
+				if (obj.hasOwnProperty(attr)) copy[attr] = this.cloneObj(obj[attr]);
+			}
+			return copy;
+		}
+
+		throw new Error("Unable to copy obj! Its type isn't supported.");
 	};
     render() {
         const { busStopList, loading } = this.state;
