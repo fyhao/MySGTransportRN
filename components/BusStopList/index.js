@@ -4,6 +4,7 @@ import React, { PureComponent } from 'react';
 import BusStopCard from '../BusStopCard';
 //import your components from react-native 
 import {  FlatList, ActivityIndicator, Text, View} from 'react-native';
+import { SearchBar } from 'react-native-elements';
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
@@ -29,7 +30,8 @@ export default class BusStopList extends PureComponent {
 		location : null,
 		errorMessage : null,
 		accelerometerData: {},
-		mData : {}
+		mData : {},
+		searchText : ''
     }
     //Define your navigation options in a form of a method so you have access to navigation props.
     static navigationOptions = {
@@ -149,6 +151,10 @@ export default class BusStopList extends PureComponent {
 		
 		this.setState({mData});
 	};
+	
+	updateSearch = searchText => {
+		this.setState({ searchText });
+	};
     render() {
         const { busStopList, loading } = this.state;
         //Destruct navigation from props 
@@ -157,6 +163,7 @@ export default class BusStopList extends PureComponent {
         //Data contains the data being  mapped over.
         //RenderItem a callback return UI for each item.
         //keyExtractor used for giving a unique identifier for each item.
+		const {searchText} = this.state;
 		
 		let debugText = 'Waiting..';
 		if (this.state.errorMessage) {
@@ -167,7 +174,14 @@ export default class BusStopList extends PureComponent {
 		debugText = 'Last Updated: ' + this.state.busStopLastUpdated;
 		//debugText = JSON.stringify(this.state.accelerometerData);
         if(!loading) {
-            return <View><FlatList 
+            return <View>
+					<SearchBar
+						ref={search => this.searchControl = search}
+						placeholder="Search Routes, Services, Bus Stops"
+						onChangeText={this.updateSearch}
+						value={searchText}
+					  />
+					<FlatList 
                     data={busStopList}
                     renderItem={(data) => <BusStopCard item={data.item} nearbyBusStopList={busStopList} navigation={navigation} />}
                     keyExtractor={(item) => item.BusStopCode} 

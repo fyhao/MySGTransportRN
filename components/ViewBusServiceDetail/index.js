@@ -23,8 +23,8 @@ class ViewBusServiceDetail extends PureComponent {
         //Have a try and catch block for catching errors.
         try {
 			const { navigation } = this.props;
-            console.log(navigation.getParam('item'))
-		    console.log(navigation.getParam('busStop'))
+            //console.log(navigation.getParam('item'))
+		    //console.log(navigation.getParam('busStop'))
 		    var busService = navigation.getParam('item');
 			var busStop = navigation.getParam('busStop');
 			
@@ -96,7 +96,7 @@ class ViewBusServiceDetail extends PureComponent {
 			console.log(busRoutes[i]);
 			break;
 		}
-		console.log(busRoutes)
+		//console.log(busRoutes)
 		// TODO, a problem raised now, the bus routes did not follow the actual road condition
 		this.setState({busRoutes})
 	}
