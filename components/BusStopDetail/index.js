@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 //import UI from react-native
-import { View, ScrollView, Text, Image, FlatList,TouchableOpacity } from 'react-native';
+import { View, ScrollView, Text, Image, FlatList,TouchableOpacity,ProgressViewIOS } from 'react-native';
 //import styles for component.
 import styles from './styles';
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps'
@@ -41,9 +41,12 @@ class BusStopDetail extends PureComponent {
 			}
 			var loading = false;
 
-			this.setState({services, loading});
+			this.setState({services});
 			
 			await this.calculateNearbyBusStops(nearbyBusStopList);
+			await this.queryNextBusArrival(busStopCode);
+			
+			this.setState({loading})
         } catch(err) {
             console.log("Error fetching data-----------", err);
         }
@@ -65,6 +68,114 @@ class BusStopDetail extends PureComponent {
 			n.longitudeDelta = 0.0421;
 		}
 		this.state.nearbyBusStopList = nearbyBusStopList;
+	};
+	async queryNextBusArrival(busStopCode) {
+		var services = this.state.services;
+		let response = await fetch(
+		  'https://api.imgshow-apps.com/?api=1&k=q:name=bus,action=checkbusarrival,busStopCode=' + busStopCode,
+		);
+		let responseJson = await response.json();
+		
+		for(var i = 0; i < services.length; i++) {
+			var svc = services[i];
+			svc.NextBusProgress = 0;
+			svc.NextBus2Progress = 0;
+			svc.NextBus3Progress = 0;
+			svc.NextBusArrival = 0;
+			svc.NextBus2Arrival = 0;
+			svc.NextBus3Arrival = 0;
+			for(var j = 0; j < responseJson.length; j++) {
+				var res = responseJson[j];
+				if(res.ServiceNo == svc.ServiceNo) {
+					//svc.NextBusArrival = res.NextBus.EstimatedArrival;
+					//svc.NextBus2Arrival = res.NextBus2.EstimatedArrival;
+					//svc.NextBus3Arrival = res.NextBus3.EstimatedArrival;
+					
+					var now = new Date();
+					try {
+						if(res.NextBus.EstimatedArrival != '') {
+							var d1 = new Date(res.NextBus.EstimatedArrival);
+							var min1 = Math.ceil((d1.getTime() - now.getTime()) / 1000 / 60);
+							min1 = Math.abs(min1);
+							svc.NextBusArrival = min1;
+						}
+						else {
+							svc.NextBusArrival = '-';
+						}
+					} catch (e) {}
+					try {
+						if(res.NextBus2.EstimatedArrival != '') {
+							var d2 = new Date(res.NextBus2.EstimatedArrival);
+							var min2 = Math.ceil((d2.getTime() - now.getTime()) / 1000 / 60);
+							min2 = Math.abs(min2);
+							svc.NextBus2Arrival = min2;
+						}
+						else {
+							svc.NextBus2Arrival = '-';
+						}
+					} catch (e) {}
+					try {
+						if(res.NextBus3.EstimatedArrival != '') {
+							var d3 = new Date(res.NextBus3.EstimatedArrival);
+							var min3 = Math.ceil((d3.getTime() - now.getTime()) / 1000 / 60);
+							min3 = Math.abs(min3);
+							svc.NextBus3Arrival = min3;
+						}
+						else {
+							svc.NextBus3Arrival = '-';
+						}
+					} catch (e) {}
+					break;
+				}
+			}
+		}
+		// calculate all progress bar overview
+		var maxArrivalTime = -1;
+		for(var i = 0; i < services.length; i++) {
+			var svc = services[i];
+			if(svc.NextBusArrival != '-' && svc.NextBusArrival > maxArrivalTime) {
+				maxArrivalTime = svc.NextBusArrival;
+			}
+			if(svc.NextBus2Arrival != '-' && svc.NextBus2Arrival > maxArrivalTime) {
+				maxArrivalTime = svc.NextBus2Arrival;
+			}
+			if(svc.NextBus3Arrival != '-' && svc.NextBus3Arrival > maxArrivalTime) {
+				maxArrivalTime = svc.NextBus3Arrival;
+			}
+		}
+		
+		for(var i = 0; i < services.length; i++) {
+			var svc = services[i];
+			if(svc.NextBusArrival && svc.NextBusArrival != '-') {
+				svc.NextBusProgress = svc.NextBusArrival / maxArrivalTime;
+			}
+			else {
+				svc.NextBusProgress = 1;
+			}
+			if(svc.NextBus2Arrival && svc.NextBus2Arrival != '-') {
+				svc.NextBus2Progress = svc.NextBus2Arrival / maxArrivalTime;
+			}
+			else {
+				svc.NextBus2Progress = 1;
+			}
+			if(svc.NextBus3Arrival && svc.NextBus3Arrival != '-') {
+				svc.NextBus3Progress = svc.NextBus3Arrival / maxArrivalTime;
+			}
+			else {
+				svc.NextBus3Progress = 1;
+			}
+			if(svc.NextBusArrival == 0) svc.NextBusProgress = 0;
+			if(svc.NextBus2Arrival == 0) svc.NextBus2Progress = 0;
+			if(svc.NextBus3Arrival == 0) svc.NextBus3Progress = 0;
+		}
+		for(var i = 0; i < services.length; i++) {
+			var svc = services[i];
+			if(svc.ServiceNo == '66') {
+				console.log(svc);
+			}
+			
+		}
+		this.setState({services})
 	};
 	cloneObj(obj) {
 		var copy;
@@ -155,9 +266,23 @@ class BusStopDetail extends PureComponent {
 					<TouchableOpacity style={{backgroundColor: 'transparent'}} onPress={() => navigation.navigate('ViewBusServiceDetail',{item:data.item,busStop:navigation.getParam('item'),isNearBy:isNearBy})}>
 					<View style={styles.ServiceNoBox}>
 						<View style={styles.ServiceNoLeftBox}/>
-						<View style={styles.SerivceNoRightBox}>
+						<View style={styles.ServiceNoRightBox}>
 							<Text style={styles.ServiceNoText}>{data.item.ServiceNo}</Text>
 							<Text style={styles.ServiceLastStop}>To {data.item.lastStop}</Text>
+						</View>
+						<View style={styles.ServiceNoNextArrival}>
+							<View style={styles.ArrivalBox}>
+								<ProgressViewIOS style={styles.ArrivalProgress} trackTintColor='#ffcccc' progressTintColor='orange' progress={data.item.NextBusProgress} width={50}/>
+								<Text style={styles.ArrivalText}>{data.item.NextBusArrival}</Text>
+							</View>
+							<View style={styles.ArrivalBox}>
+								<ProgressViewIOS style={styles.ArrivalProgress} trackTintColor='#ffcccc' progressTintColor='orange' progress={data.item.NextBus2Progress} width={50}/>
+								<Text style={styles.ArrivalText}>{data.item.NextBus2Arrival}</Text>
+							</View>
+							<View style={styles.ArrivalBox}>
+								<ProgressViewIOS style={styles.ArrivalProgress} trackTintColor='#ffcccc' progressTintColor='orange' progress={data.item.NextBus3Progress} width={50}/>
+								<Text style={styles.ArrivalText}>{data.item.NextBus3Arrival}</Text>
+							</View>
 						</View>
 					</View>
 					</TouchableOpacity>}
