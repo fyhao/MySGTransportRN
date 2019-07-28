@@ -155,6 +155,7 @@ export default class BusStopList extends PureComponent {
 	};
 	
 	updateSearch = searchText => {
+		this.setState({searchText});
 		if(searchText.trim().length == 0) return;
 		var searchResultList = [];
 		function addSearchResult(item) {
@@ -194,8 +195,8 @@ export default class BusStopList extends PureComponent {
 		}
 		//searchResultList = [this.state.busStopList[0]]
 		//searchResultList[0].searchItemType = 'busStop';
-		console.log(this.state.busStopList[0])
-		this.setState({ searchText, searchResultList });
+		//console.log(this.state.busStopList[0])
+		this.setState({ searchResultList });
 	};
 	cloneObj(obj) {
 		var copy;
