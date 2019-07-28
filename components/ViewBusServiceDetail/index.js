@@ -107,8 +107,8 @@ class ViewBusServiceDetail extends PureComponent {
 		var region={
 		  latitude: navigation.getParam('busStop').Latitude,
 		  longitude: navigation.getParam('busStop').Longitude,
-		  latitudeDelta: 0.0922,
-		  longitudeDelta: 0.0421,
+		  latitudeDelta: 0.0922 / 10,
+		  longitudeDelta: 0.0421 / 10,
 		};
         return (
             <ScrollView style={{flex: 1}}>

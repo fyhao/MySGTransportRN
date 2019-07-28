@@ -107,8 +107,8 @@ class BusStopDetail extends PureComponent {
         var region={
 		  latitude: navigation.getParam('item').Latitude,
 		  longitude: navigation.getParam('item').Longitude,
-		  latitudeDelta: 0.0922,
-		  longitudeDelta: 0.0421,
+		  latitudeDelta: 0.0922 / 10,
+		  longitudeDelta: 0.0421 / 10,
 		};
 		var itemHolder = {};
         return (
