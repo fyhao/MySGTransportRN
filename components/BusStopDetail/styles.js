@@ -20,10 +20,16 @@ const styles = StyleSheet.create({
 		width:10,
 		height:40
 	},
-	ServiceNoText : {
-		fontSize:20,
+	SerivceNoRightBox : {
+		flex: 1, flexDirection: 'column',
 		paddingLeft:10
 	},
+	ServiceNoText : {
+		fontSize:20,
+	},
+	ServiceLastStop : {
+		fontSize:10,
+	}
 })
 
 export default styles;

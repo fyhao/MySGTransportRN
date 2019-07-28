@@ -21,6 +21,7 @@ class BusStopDetail extends PureComponent {
         try {
 			const { navigation } = this.props;
             const data = require('../../assets/data/stopServiceData.json');
+			const serviceLastStopData = require('../../assets/data/service_last_stop_data.json');
 			var busStopCode = navigation.getParam('item').BusStopCode;
 			var nearbyBusStopList = navigation.getParam('nearbyBusStopList');
 			
@@ -32,6 +33,10 @@ class BusStopDetail extends PureComponent {
 				b1 = parseInt(b1);
 				return a1 - b1;
 			});
+			// Fill service last stop data into services
+			for(var i = 0; i < services.length; i++) {
+				services[i].lastStop = serviceLastStopData[services[i].ServiceNo];
+			}
 			var loading = false;
 
 			this.setState({services, loading});
@@ -106,7 +111,10 @@ class BusStopDetail extends PureComponent {
 					<TouchableOpacity style={{backgroundColor: 'transparent'}} onPress={() => navigation.navigate('ViewBusServiceDetail',{item:data.item,busStop:navigation.getParam('item')})}>
 					<View style={styles.ServiceNoBox}>
 						<View style={styles.ServiceNoLeftBox}/>
-						<Text style={styles.ServiceNoText}>{data.item.ServiceNo}</Text>
+						<View style={styles.SerivceNoRightBox}>
+							<Text style={styles.ServiceNoText}>{data.item.ServiceNo}</Text>
+							<Text style={styles.ServiceLastStop}>To {data.item.lastStop}</Text>
+						</View>
 					</View>
 					</TouchableOpacity>}
                     keyExtractor={(item) => item.ServiceNo} 
