@@ -262,13 +262,13 @@ export default class BusStopList extends PureComponent {
 						<FlatList 
 						data={searchResultList}
 						renderItem={(data) => <SearchResultCard item={data.item} nearbyBusStopList={busStopList} navigation={navigation} />}
-						keyExtractor={(item) => item.key} 
+						keyExtractor={(item) => item.key + Math.random()} 
 						/>
 					  ) : (
 						<FlatList 
 						data={busStopList}
 						renderItem={(data) => <BusStopCard item={data.item} nearbyBusStopList={busStopList} navigation={navigation} />}
-						keyExtractor={(item) => item.BusStopCode} 
+						keyExtractor={(item) => item.BusStopCode + Math.random()} 
 						/>
 					  )}
 					<Text style={{textAlign:"center",fontSize:18}}>{debugText}</Text>
