@@ -26,6 +26,7 @@ class BusStopDetail extends PureComponent {
 			var nearbyBusStopList = navigation.getParam('nearbyBusStopList');
 			
 			var services = data[busStopCode];
+			if(typeof services == 'undefined') services = [];
 			services.sort(function(a,b) {
 				var a1 = a.ServiceNo;
 				var b1 = b.ServiceNo;
