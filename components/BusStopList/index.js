@@ -180,6 +180,8 @@ export default class BusStopList extends PureComponent {
 						placeholder="Search Routes, Services, Bus Stops"
 						onChangeText={this.updateSearch}
 						value={searchText}
+						cancelButtonTitle="Cancel"
+						platform="ios"
 					  />
 					<FlatList 
                     data={busStopList}
