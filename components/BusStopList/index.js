@@ -155,19 +155,46 @@ export default class BusStopList extends PureComponent {
 	};
 	
 	updateSearch = searchText => {
+		if(searchText.trim().length == 0) return;
 		var searchResultList = [];
+		function addSearchResult(item) {
+			for(var i = 0; i < searchResultList.length; i++) {
+				if(searchResultList[i].key == item.key) {
+					return false;
+				}
+			}
+			searchResultList.push(item);
+			return true;
+		}
 		// Search bus stop first, then search bus services
 		for(var i = 0; i < this.state.busStopList.length; i++) {
 			var bs = this.state.busStopList[i];
-			if(bs.BusStopCode.indexOf(searchText) > -1) {
+			if(bs.BusStopCode.toLowerCase().indexOf(searchText.toLowerCase()) > -1
+				|| bs.Description.toLowerCase().indexOf(searchText.toLowerCase()) > -1
+				|| bs.RoadName.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
 				var item = this.cloneObj(bs);
 				item.searchItemType = 'busStop';
-				searchResultList.push(item);
+				item.key = item.BusStopCode;
+				addSearchResult(item);
+			}
+			if(bs.services.length) {
+				for(var j = 0; j < bs.services.length; j++) {
+					var svc = bs.services[j];
+					if(svc.ServiceNo.toLowerCase().indexOf(searchText.toLowerCase()) > -1
+						|| svc.LoopDesc.toLowerCase().indexOf(searchText.toLowerCase()) > -1
+						|| svc.Operator.toLowerCase().indexOf(searchText.toLowerCase()) > -1
+						|| svc.Category.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
+						var item = this.cloneObj(bs);
+						item.searchItemType = 'busStop';
+						item.key = item.BusStopCode;
+						addSearchResult(item);
+					}
+				}
 			}
 		}
 		//searchResultList = [this.state.busStopList[0]]
 		//searchResultList[0].searchItemType = 'busStop';
-		//console.log(this.state.busStopList[0])
+		console.log(this.state.busStopList[0])
 		this.setState({ searchText, searchResultList });
 	};
 	cloneObj(obj) {
@@ -231,11 +258,11 @@ export default class BusStopList extends PureComponent {
 						cancelButtonTitle="Cancel"
 						platform="ios"
 					  />
-					  {searchText.length > 0 ? (
+					  {searchText.trim().length > 0 ? (
 						<FlatList 
 						data={searchResultList}
 						renderItem={(data) => <SearchResultCard item={data.item} nearbyBusStopList={busStopList} navigation={navigation} />}
-						keyExtractor={(item) => item.BusStopCode} 
+						keyExtractor={(item) => item.key} 
 						/>
 					  ) : (
 						<FlatList 
