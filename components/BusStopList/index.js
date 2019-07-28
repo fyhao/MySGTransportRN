@@ -157,6 +157,7 @@ export default class BusStopList extends PureComponent {
 	updateSearch = searchText => {
 		this.setState({searchText});
 		if(searchText.trim().length == 0) return;
+		var searchResultLimit = 50;
 		var searchResultList = [];
 		function addSearchResult(item) {
 			for(var i = 0; i < searchResultList.length; i++) {
@@ -164,10 +165,12 @@ export default class BusStopList extends PureComponent {
 					return false;
 				}
 			}
-			searchResultList.push(item);
+			if(searchResultList.length < searchResultLimit) {
+				searchResultList.push(item);
+			}
 			return true;
 		}
-		// Search bus stop first, then search bus services
+		// Search nearby bus stop first, then search bus services
 		for(var i = 0; i < this.state.busStopList.length; i++) {
 			var bs = this.state.busStopList[i];
 			if(bs.BusStopCode.toLowerCase().indexOf(searchText.toLowerCase()) > -1
@@ -193,6 +196,19 @@ export default class BusStopList extends PureComponent {
 				}
 			}
 		}
+		// If above nearby items search no result, then search global items
+		if(searchResultList.length == 0) {
+			const stopsData = require('../../assets/data/stops.json');
+			for(var i = 0; i < stopsData.length; i++) {
+				if(stopsData[i].Description.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
+					var item = this.cloneObj(stopsData[i]);
+					item.searchItemType = 'busStop';
+					item.key = item.BusStopCode;
+					addSearchResult(item);
+				}
+			}
+		}
+		
 		//searchResultList = [this.state.busStopList[0]]
 		//searchResultList[0].searchItemType = 'busStop';
 		//console.log(this.state.busStopList[0])
@@ -260,11 +276,14 @@ export default class BusStopList extends PureComponent {
 						platform="ios"
 					  />
 					  {searchText.trim().length > 0 ? (
-						<FlatList 
-						data={searchResultList}
-						renderItem={(data) => <SearchResultCard item={data.item} nearbyBusStopList={busStopList} navigation={navigation} />}
-						keyExtractor={(item) => item.key + Math.random()} 
-						/>
+						<View>
+							<Text>No of Items returned: {searchResultList.length}</Text>
+							<FlatList 
+							data={searchResultList}
+							renderItem={(data) => <SearchResultCard item={data.item} nearbyBusStopList={busStopList} navigation={navigation} />}
+							keyExtractor={(item) => item.key + Math.random()} 
+							/>
+						</View>
 					  ) : (
 						<FlatList 
 						data={busStopList}
