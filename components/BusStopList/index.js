@@ -97,12 +97,22 @@ export default class BusStopList extends PureComponent {
 		var newList = [];
 		var nearLimit = 0.5;
 		//console.log('filtering within ' + nearLimit + ' metre data');
+		const stopServiceData = require('../../assets/data/stopServiceData.json');
 		for(var i = 0; i < busStopList.length; i++) {
 			var stop = busStopList[i];
 			var d = this.distance(stop, myLocation);
 			if(d < nearLimit) {
 				//console.log(JSON.stringify(stop) + "," + d);
 				stop.myDistanceInMetre = Math.round(d * 1000);
+				stop.services = stopServiceData[stop.BusStopCode];
+				if(typeof stop.services == 'undefined') stop.services = [];
+				stop.services.sort(function(a,b) {
+					var a1 = a.ServiceNo;
+					var b1 = b.ServiceNo;
+					a1 = parseInt(a1);
+					b1 = parseInt(b1);
+					return a1 - b1;
+				});
 				newList.push(stop);
 			}
 		}
