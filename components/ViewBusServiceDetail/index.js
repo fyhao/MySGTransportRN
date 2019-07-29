@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 //import UI from react-native
-import { View, ScrollView, Text, Image, FlatList,ProgressViewIOS } from 'react-native';
+import { Button, View, ScrollView, Text, Image, FlatList,ProgressViewIOS } from 'react-native';
 //import styles for component.
 import styles from './styles';
 import MapView, { Marker, Polyline, Callout, PROVIDER_GOOGLE } from 'react-native-maps'
@@ -110,7 +110,127 @@ class ViewBusServiceDetail extends PureComponent {
 		//console.log(busRoutes)
 		// TODO, a problem raised now, the bus routes did not follow the actual road condition
 		this.setState({busRoutes})
-	}
+	};
+	async onReloadPressed(navigation, me) {
+		var busLocation = {};
+		// mock data
+		// TODO to get real bus location data
+		var busStopCode = navigation.getParam('busStop').BusStopCode;
+		
+		await me.queryNextBusArrival(busStopCode, me);
+	};
+	async queryNextBusArrival(busStopCode, me) {
+		var services = [me.state.busService];
+		let response = await fetch(
+		  'https://api.imgshow-apps.com/?api=1&k=q:name=bus,action=checkbusarrival,busStopCode=' + busStopCode,
+		);
+		let responseJson = await response.json();
+		
+		for(var i = 0; i < services.length; i++) {
+			var svc = services[i];
+			svc.NextBusProgress = 0;
+			svc.NextBus2Progress = 0;
+			svc.NextBus3Progress = 0;
+			svc.NextBusArrival = 0;
+			svc.NextBus2Arrival = 0;
+			svc.NextBus3Arrival = 0;
+			for(var j = 0; j < responseJson.length; j++) {
+				var res = responseJson[j];
+				if(res.ServiceNo == svc.ServiceNo) {
+					//svc.NextBusArrival = res.NextBus.EstimatedArrival;
+					//svc.NextBus2Arrival = res.NextBus2.EstimatedArrival;
+					//svc.NextBus3Arrival = res.NextBus3.EstimatedArrival;
+					
+					svc.NextBusLocation = {latitude:res.NextBus.Latitude,longitude:res.NextBus.Longitude};
+					svc.NextBus2Location = {latitude:res.NextBus2.Latitude,longitude:res.NextBus2.Longitude};
+					svc.NextBus3Location = {latitude:res.NextBus3.Latitude,longitude:res.NextBus3.Longitude};
+					var now = new Date();
+					try {
+						if(res.NextBus.EstimatedArrival != '') {
+							var d1 = new Date(res.NextBus.EstimatedArrival);
+							var min1 = Math.ceil((d1.getTime() - now.getTime()) / 1000 / 60);
+							min1 = Math.abs(min1);
+							svc.NextBusArrival = min1;
+						}
+						else {
+							svc.NextBusArrival = '-';
+						}
+					} catch (e) {}
+					try {
+						if(res.NextBus2.EstimatedArrival != '') {
+							var d2 = new Date(res.NextBus2.EstimatedArrival);
+							var min2 = Math.ceil((d2.getTime() - now.getTime()) / 1000 / 60);
+							min2 = Math.abs(min2);
+							svc.NextBus2Arrival = min2;
+						}
+						else {
+							svc.NextBus2Arrival = '-';
+						}
+					} catch (e) {}
+					try {
+						if(res.NextBus3.EstimatedArrival != '') {
+							var d3 = new Date(res.NextBus3.EstimatedArrival);
+							var min3 = Math.ceil((d3.getTime() - now.getTime()) / 1000 / 60);
+							min3 = Math.abs(min3);
+							svc.NextBus3Arrival = min3;
+						}
+						else {
+							svc.NextBus3Arrival = '-';
+						}
+					} catch (e) {}
+					break;
+				}
+			}
+		}
+		// calculate all progress bar overview
+		var maxArrivalTime = -1;
+		for(var i = 0; i < services.length; i++) {
+			var svc = services[i];
+			if(svc.NextBusArrival != '-' && svc.NextBusArrival > maxArrivalTime) {
+				maxArrivalTime = svc.NextBusArrival;
+			}
+			if(svc.NextBus2Arrival != '-' && svc.NextBus2Arrival > maxArrivalTime) {
+				maxArrivalTime = svc.NextBus2Arrival;
+			}
+			if(svc.NextBus3Arrival != '-' && svc.NextBus3Arrival > maxArrivalTime) {
+				maxArrivalTime = svc.NextBus3Arrival;
+			}
+		}
+		
+		for(var i = 0; i < services.length; i++) {
+			var svc = services[i];
+			if(svc.NextBusArrival && svc.NextBusArrival != '-') {
+				svc.NextBusProgress = svc.NextBusArrival / maxArrivalTime;
+			}
+			else {
+				svc.NextBusProgress = 1;
+			}
+			if(svc.NextBus2Arrival && svc.NextBus2Arrival != '-') {
+				svc.NextBus2Progress = svc.NextBus2Arrival / maxArrivalTime;
+			}
+			else {
+				svc.NextBus2Progress = 1;
+			}
+			if(svc.NextBus3Arrival && svc.NextBus3Arrival != '-') {
+				svc.NextBus3Progress = svc.NextBus3Arrival / maxArrivalTime;
+			}
+			else {
+				svc.NextBus3Progress = 1;
+			}
+			if(svc.NextBusArrival == 0) svc.NextBusProgress = 0;
+			if(svc.NextBus2Arrival == 0) svc.NextBus2Progress = 0;
+			if(svc.NextBus3Arrival == 0) svc.NextBus3Progress = 0;
+		}
+		var busService = this.cloneObj(services[0]);
+		me.setState({busService})
+		var busRegion = {
+			latitude : parseFloat(busService.NextBusLocation.latitude),
+			longitude: parseFloat(busService.NextBusLocation.longitude),
+			latitudeDelta: 9.0922,
+			longitudeDelta: 9.0421,
+		};
+		me.setState({busRegion});
+	};
 	cloneObj(obj) {
 		var copy;
 
@@ -165,11 +285,6 @@ class ViewBusServiceDetail extends PureComponent {
 						showsTraffic={true}
 						style={{flex: 1}}
 						>
-						<Marker coordinate={region}>
-							<View style={{padding: 1}}>
-							   <Image source={require('../../assets/images/busStopIcon.png')} style={{width: 30, height: 30}} />
-							 </View>
-						</Marker>
 						{this.state.busRegion != null ? <Marker coordinate={this.state.busRegion}>
 						<View style={{padding: 1}}>
 							   <Image source={require('../../assets/images/busIcon.png')} style={{width: 30, height: 30}} />
@@ -196,6 +311,12 @@ class ViewBusServiceDetail extends PureComponent {
 							 <Callout><Text>{r.Description}</Text></Callout>
 						</Marker>
 						)) : (null)}
+						
+						<Marker coordinate={region}>
+							<View style={{padding: 1}}>
+							   <Image source={require('../../assets/images/busStopIcon.png')} style={{width: 30, height: 30}} />
+							 </View>
+						</Marker>
 						</MapView>
 						
 						<View style={styles.ServiceNoBox}>
@@ -221,6 +342,9 @@ class ViewBusServiceDetail extends PureComponent {
 						</View>
 					</View>}
 				  </View>
+				  <Button title="Reload" onPress={() => {
+					  this.onReloadPressed(navigation, this)
+				  }}/>
             </ScrollView>
         );
     }
