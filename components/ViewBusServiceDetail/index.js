@@ -27,7 +27,7 @@ class ViewBusServiceDetail extends PureComponent {
 		    //console.log(navigation.getParam('busStop'))
 		    var busService = navigation.getParam('item');
 			var busStop = navigation.getParam('busStop');
-			console.log(busService);
+			
 			var loading = false;
 			this.setState({busService, busStop, loading});
 			
@@ -74,11 +74,19 @@ class ViewBusServiceDetail extends PureComponent {
 			routes = require('../../assets/data/routes.json');
 			this.setState({routes})
 		}
+		else {
+			routes = this.state.routes;
+		}
+		routes = this.cloneObj(routes);
 		var stops = null;
 		if(this.state.stops == null) {
 			stops = require('../../assets/data/stops.json');
 			this.setState({stops})
 		}
+		else {
+			stops = this.state.stops;
+		}
+		stops = this.cloneObj(stops);
 		var serviceNo = this.state.busService.ServiceNo;
 		var busStopCode = this.state.busStop.BusStopCode;
 		var busRoutes = [];
@@ -92,8 +100,8 @@ class ViewBusServiceDetail extends PureComponent {
 						r.latitude = s.Latitude;
 						r.longitude = s.Longitude;
 						r.Description = s.Description;
-						r.latitudeDelta = 0.0922;
-						r.longitudeDelta = 0.0421;
+						r.latitudeDelta = 9.0922;
+						r.longitudeDelta = 9.0421;
 					}
 				}
 				busRoutes.push(r);
@@ -103,6 +111,39 @@ class ViewBusServiceDetail extends PureComponent {
 		// TODO, a problem raised now, the bus routes did not follow the actual road condition
 		this.setState({busRoutes})
 	}
+	cloneObj(obj) {
+		var copy;
+
+		// Handle the 3 simple types, and null or undefined
+		if (null == obj || "object" != typeof obj) return obj;
+
+		// Handle Date
+		if (obj instanceof Date) {
+			copy = new Date();
+			copy.setTime(obj.getTime());
+			return copy;
+		}
+
+		// Handle Array
+		if (obj instanceof Array) {
+			copy = [];
+			for (var i = 0, len = obj.length; i < len; i++) {
+				copy[i] = this.cloneObj(obj[i]);
+			}
+			return copy;
+		}
+
+		// Handle Object
+		if (obj instanceof Object) {
+			copy = {};
+			for (var attr in obj) {
+				if (obj.hasOwnProperty(attr)) copy[attr] = this.cloneObj(obj[attr]);
+			}
+			return copy;
+		}
+
+		throw new Error("Unable to copy obj! Its type isn't supported.");
+	};
     //Define your class component
     render() {
 		const { navigation } = this.props;
@@ -150,7 +191,7 @@ class ViewBusServiceDetail extends PureComponent {
 						{this.state.busRoutes != null ? this.state.busRoutes.map((r,i) => (
 							<Marker coordinate={r} key={i}>
 							<View style={{padding: 1}}>
-							   <Image source={require('../../assets/images/busStopIcon.png')} style={{width: 30, height: 30}} />
+							   <Image source={require('../../assets/images/otherBusStopIcon.png')} style={{width: 30, height: 30}} />
 							 </View>
 							 <Callout><Text>{r.Description}</Text></Callout>
 						</Marker>

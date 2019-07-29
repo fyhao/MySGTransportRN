@@ -244,7 +244,8 @@ class BusStopDetail extends PureComponent {
 							   <Image source={require('../../assets/images/busStopIcon.png')} style={{width: 30, height: 30}} />
 							 </View>
 						</Marker>
-						{this.state.nearbyBusStopList != null ? this.state.nearbyBusStopList.map((r,i) => (
+						{/*
+						{false && this.state.nearbyBusStopList != null ? this.state.nearbyBusStopList.map((r,i) => (
 							<Marker coordinate={r} key={i}>
 							<View style={{padding: 1}}>
 							   <Image source={require('../../assets/images/busStopIcon.png')} style={{width: 30, height: 30}} />
@@ -252,6 +253,7 @@ class BusStopDetail extends PureComponent {
 							 <Callout><Text>{r.Description}</Text></Callout>
 						</Marker>
 						)) : (null)}
+						*/}
 					</MapView>
 				  </View>
 				  
